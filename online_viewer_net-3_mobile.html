@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plane Seat with Fullscreen Safety Card</title>
+  <style>
+    body {
+      margin: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+    }
+
+    .seat {
+      position: relative;
+      width: 320px;
+      height: 550px;
+      background: linear-gradient(#f0f0f0, #c0c0c0);
+      border-radius: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      overflow: hidden;
+      border: 6px solid #aaa;
+    }
+
+    .headrest {
+      width: 100%;
+      height: 80px;
+      background: #ddd;
+      border-bottom: 2px solid #bbb;
+    }
+
+    .backrest {
+      position: absolute;
+      top: 80px;
+      bottom: 130px;
+      width: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        #e5e5e5,
+        #e5e5e5 10px,
+        #d5d5d5 10px,
+        #d5d5d5 20px
+      );
+    }
+
+    .tray-hinge {
+      position: absolute;
+      width: 240px;
+      height: 12px;
+      background: #bbb;
+      bottom: 125px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 6px;
+      z-index: 2;
+    }
+
+    .tray-table {
+      position: absolute;
+      bottom: 125px;
+      left: 50%;
+      transform: translateX(-50%) rotateX(90deg);
+      width: 240px;
+      height: 120px;
+      background: #e0e0e0;
+      border-radius: 12px;
+      transform-origin: top center;
+      transition: transform 0.5s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .tray-table.open {
+      transform: translateX(-50%) rotateX(0deg);
+    }
+
+    .bottom-section {
+      position: absolute;
+      bottom: 0;
+      height: 130px;
+      width: 100%;
+      background: #d3d3d3;
+      border-top: 2px solid #bbb;
+    }
+
+    .seat-pocket {
+      position: absolute;
+      bottom: 40px;
+      width: 180px;
+      height: 60px;
+      background: #f1f1f1;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+      border: 2px solid #ccc;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .safety-card {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="seat">
+  <div class="headrest"></div>
+  <div class="backrest"></div>
+
+  <!-- Tray -->
+  <div class="tray-hinge"></div>
+  <div class="tray-table" id="trayTable">Click to Open/Close</div>
+
+  <!-- Seat pocket and safety card -->
+  <div class="bottom-section">
+    <div class="seat-pocket">
+      <img
+        class="safety-card"
+        id="safetyCard"
+        src="https://mir-s3-cdn-cf.behance.net/project_modules/1400_opt_1/68781e24805219.55c0b1a33bc34.jpg"
+        alt="Safety Card"
+      />
+    </div>
+  </div>
+</div>
+
+<script>
+  const tray = document.getElementById('trayTable');
+  const safetyCard = document.getElementById('safetyCard');
+
+  tray.addEventListener('click', () => {
+    tray.classList.toggle('open');
+  });
+
+  safetyCard.addEventListener('click', async () => {
+    try {
+      const wrapper = document.createElement('div');
+      wrapper.style.background = '#fff';
+      wrapper.style.display = 'flex';
+      wrapper.style.justifyContent = 'center';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.height = '100%';
+      wrapper.style.width = '100%';
+
+      const cloned = safetyCard.cloneNode(true);
+      cloned.style.maxHeight = '100%';
+      cloned.style.maxWidth = '100%';
+
+      wrapper.appendChild(cloned);
+      document.body.appendChild(wrapper);
+
+      await wrapper.requestFullscreen();
+
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+          wrapper.remove();
+        }
+      });
+    } catch (err) {
+      console.error("Fullscreen error:", err);
+    }
+  });
+</script>
+
+</body>
+</html>
